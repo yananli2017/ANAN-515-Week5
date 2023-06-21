@@ -1,0 +1,68 @@
+---
+title: "ANA 515 Visualization Activity"
+author: "Yanan Li"
+date: "2023-06-21"
+output:
+  html_document:
+    theme: cerulean
+---
+
+The “Drug Use By Age” dataset was collected as part of The National Survey on Drug Use and Health (NSDUH) series. It measures the prevalence and correlates of drug use in the United States. The survey included questions concerning treatment for both substance abuse and mental health-related disorders. Respondents were also asked about personal and family income sources and amounts, health care access and coverage, illegal activities and arrest record, problems resulting from the use of drugs, and needle-sharing. The research question I hope to answer is whether drug abuse is related to age. The dataset is saved in a csv file, including 17 age groups as rows and 26 attributes as columns.
+
+
+```{r Get dataset, include=TRUE}
+# Use read_csv function to read the dataset
+# Read the library tidyverse first
+library(tidyverse)
+url <- "https://raw.githubusercontent.com/fivethirtyeight/data/master/drug-use-by-age/drug-use-by-age.csv"
+
+druguse <- read_csv(url)
+
+```
+
+```{r Clean dataset, include=TRUE}
+#Lets just see the alcohol use/frequency, marijuana use/frequency, cocaine use/frequency
+
+drug_sub <- select(druguse,age,alcohol_use,alcohol_frequency,marijuana_use,marijuana_frequency,cocaine_use,cocaine_frequency )
+```
+
+This dataframe has `r nrow(drug_sub)` rows and `r ncol(drug_sub)` columns. The names of the columns and a brief description of each are in the table below:
+
+
+
+```{r description table for the dataset, include=TRUE}
+library(knitr)
+columns_summary <- data.frame(
+  Columns = c(colnames(drug_sub)),
+  Description = c("age","Percentage of those in an age group who used alcohol in the past 12 months", "Median number of times a user in an age group used alcohol in the past 12 months", "Percentage of those in an age group who used marijuana in the past 12 months", "Median number of times a user in an age group used marijuana in the past 12 months", "Percentage of those in an age group who used cocaine in the past 12 months", "Median number of times a user in an age group used cocaine in the past 12 months" )
+  )
+
+kable(columns_summary, caption = "Data Description")
+```
+
+```{r summary statistics, include=TRUE}
+#Pick the fields: alcohol use, marijuana use, cocaine use
+drug_pick <- select(drug_sub,age,alcohol_use,marijuana_use,cocaine_use )
+drug_sum <- summary(drug_pick)
+drug_sum
+
+```
+
+
+## % Alcohol Use in the past 12 months
+
+The Percentage of those in an age group who used alcohol in the past 12 months is shown below:
+
+```{r scatterplot, echo=TRUE}
+ggplot(drug_pick,aes(x=age, y=alcohol_use)) + geom_point(color='blue')+geom_smooth(aes(group=1),  color = 'green') + labs(title = '% Alcohol Use in the past 12 months', x='Age', y='Alcohol Use')
+
+```
+
+## Median number of alcohol use times in the past 12 months
+
+The median number of times a user in an age group used alcohol in the past 12 months is shown below:
+
+```{r barchart, echo=TRUE}
+ggplot(drug_sub,aes(x=age,y=alcohol_frequency)) +geom_col(fill='skyblue', color='white') + labs(title = 'Median number of alcohol use times in the past 12 months', x='Age', y='Alcohol Use times')
+
+```
